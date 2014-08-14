@@ -20,10 +20,10 @@
 
 ### インストール方法 ###
 
-1. 以下の場所に、「Speed Guide.jsx」をコピーします。Windows版ではお使いのIllustratorのモードによって保存する場所が異なりますのでご注意ください。
- * 【Mac】/Applications/Adobe Illustrator [CS6/CC]/Presets/ja_JP/スクリプト/
- * 【Windows 64bit版】C:\Program Files\Adobe\Adobe Illustrator {CS6|CC|CC2014} (64 Bit)\Presets\ja_JP\スクリプト\
- * 【Windows 32bit版】C:\Program Files (x86)\Adobe\Adobe Illustrator {CS6|CC}\Presets\ja_JP\スクリプト\
+1. 以下の場所に、「不要オブジェクトの削除.jsx」をコピーします。Windows版ではお使いのIllustratorのモードによって保存する場所が異なりますのでご注意ください。
+	* 【Mac】/Applications/Adobe Illustrator [CS6/CC]/Presets/ja_JP/スクリプト/
+	* 【Windows 64bit版】C:\Program Files\Adobe\Adobe Illustrator {CS6|CC|CC2014} (64 Bit)\Presets\ja_JP\スクリプト\
+	* 【Windows 32bit版】C:\Program Files (x86)\Adobe\Adobe Illustrator {CS6|CC}\Presets\ja_JP\スクリプト\
 2. Illustratorを再起動します。
 3. “ファイル”メニュー→“スクリプト”に“不要オブジェクトの削除”と表示されていればインストール成功です。
 
@@ -31,16 +31,16 @@
 
 ### 使い方 ###
 
-1. ガイドを入れたい画像を開き、“ファイル”メニュー→“スクリプト”→“不要オブジェクトの削除”を選択します。
+1. “ファイル”メニュー→“スクリプト”→“不要オブジェクトの削除”を選択します。
 2. 削除したいオブジェクトの種類にチェックを入れます。
 3. オプションを設定します。
-4. ［OK］をクリックします。
+4. ［実行］をクリックします。
 
 -----
 
 ### 削除対象について ###
 
-削除できるオブジェクトは4種類です。それぞれは、下のような基準で検出されます
+削除できるオブジェクトは4種類です。それぞれは、以下のような基準で検出されます
 
 | オブジェクト | 説明 |
 |:-----------|:------------|
@@ -112,6 +112,5 @@
 * Copyright (c) 2014 Toshiyuki Takahashi
 * Released under the MIT license
 * [http://opensource.org/licenses/mit-license.php](http://opensource.org/licenses/mit-license.php)
-* Created by Toshiyuki Takahashi (Graphic Arts Unit)
-* [Graphic Arts Unit](http://www.graphicartsunit.com/)
+* Created by Toshiyuki Takahashi ([Graphic Arts Unit](http://www.graphicartsunit.com/))
 * [Twitter](https://twitter.com/gautt)
