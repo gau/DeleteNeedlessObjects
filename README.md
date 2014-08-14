@@ -21,9 +21,9 @@
 ### インストール方法 ###
 
 1. 以下の場所に、「不要オブジェクトの削除.jsx」をコピーします。Windows版ではお使いのIllustratorのモードによって保存する場所が異なりますのでご注意ください。
-	* 【Mac】/Applications/Adobe Illustrator {CS5/CS6/CC/CC2014}/Presets/ja_JP/スクリプト/
-	* 【Win32】C:\Program Files\Adobe\Adobe Illustrator {CS5|CS6|CC|CC2014}\Presets\ja_JP\スクリプト\
-	* 【Win64】C:\Program Files\Adobe\Adobe Illustrator {CS6|CC|CC2014} (64 Bit)\Presets\ja_JP\スクリプト\　または　C:\Program Files (x86)\Adobe\Adobe Illustrator {CS5|CS6|CC}\Presets\ja_JP\スクリプト\
+	* 【Mac】/Applications/Adobe Illustrator {バージョン}/Presets/ja_JP/スクリプト/
+	* 【Win32】C:\Program Files\Adobe\Adobe Illustrator {バージョン}\Presets\ja_JP\スクリプト\
+	* 【Win64】C:\Program Files\Adobe\Adobe Illustrator {バージョン} (64 Bit)\Presets\ja_JP\スクリプト\　または　C:\Program Files (x86)\Adobe\Adobe Illustrator {バージョン}\Presets\ja_JP\スクリプト\
 2. Illustratorを再起動します。
 3. “ファイル”メニュー→“スクリプト”に“不要オブジェクトの削除”と表示されていればインストール成功です。
 
