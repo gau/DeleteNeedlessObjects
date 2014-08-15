@@ -22,7 +22,7 @@ http://www.graphicartsunit.com/
 	// Constant
 	const SCRIPT_TITLE = "不要オブジェクトを削除";
 	const SCRIPT_VERSION = "0.7.3";
-	const HAIRLINE_ACCURACY = 100;
+	const HAIRLINE_ACCURACY = 800;
 
 	// UI Dialog
 	function mainDialog() {
