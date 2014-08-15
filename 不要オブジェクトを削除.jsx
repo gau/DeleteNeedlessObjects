@@ -21,7 +21,7 @@ http://www.graphicartsunit.com/
 
 	// Constant
 	const SCRIPT_TITLE = "不要オブジェクトを削除";
-	const SCRIPT_VERSION = "0.7.2";
+	const SCRIPT_VERSION = "0.7.3";
 	const HAIRLINE_ACCURACY = 100;
 
 	// UI Dialog
@@ -248,13 +248,12 @@ http://www.graphicartsunit.com/
 		var b = true;
 		if (!item.filled || item.stroked || !isAllStraght(item) || item.pathPoints.length < 2) b = false;
 		if (b) {
-			var allAspectRaito = getAllAspectRaito(item.pathPoints);
-			var baseRaito = Math.max.apply(null, allAspectRaito);
-			if(baseRaito != 0){
-				b = false;
-			} else {
-				for(var i=0; i<allAspectRaito.length; i++){
-					if (allAspectRaito[i] != 0 && baseRaito != allAspectRaito[i]) {
+			var allAngle = getAllAngle(item.pathPoints);
+			if(allAngle.length > 1) {
+				var baseAngle = allAngle[0];
+				var allowableAngle = 360 / HAIRLINE_ACCURACY;
+				for(var i=0; i<allAngle.length; i++){
+					if (Math.abs(baseAngle - allAngle[i]) >= allowableAngle) {
 						b = false;
 					}
 				}
@@ -262,20 +261,21 @@ http://www.graphicartsunit.com/
 		}
 		return b;
 
-		function getAllAspectRaito(points) {
-			var allAspectRaito = [];
+		function getAllAngle(points) {
+			var allAngle = [];
+			var basePoint, nextPoint, angle;
 			for (var i = 0; i < points.length-1; i++){
-				var basePoint = {x:points[i].anchor[0], y:points[i].anchor[1]};
-				var nextPoint = {x:points[i+1].anchor[0], y:points[i+1].anchor[1]};
-				if ((basePoint.x-nextPoint.x) == 0 || (basePoint.y-nextPoint.y) == 0) {
-					allAspectRaito[i] = 0;
-				} else if (basePoint.x == nextPoint.x && basePoint.y == nextPoint.y){
-					allAspectRaito[i] = 0;
-				} else {
-					allAspectRaito[i] = Math.round((basePoint.x-nextPoint.x)/(basePoint.y-nextPoint.y)*HAIRLINE_ACCURACY)/HAIRLINE_ACCURACY;
+				basePoint = {x:item.pathPoints[i].anchor[0], y:item.pathPoints[i].anchor[1]};
+				nextPoint = {x:item.pathPoints[i+1].anchor[0], y:item.pathPoints[i+1].anchor[1]};
+				if (!(basePoint.x == nextPoint.x && basePoint.y == nextPoint.y)) {
+					angle = (Math.atan2(nextPoint.y - basePoint.y, nextPoint.x - basePoint.x)) * 180 / Math.PI;
+					if(angle < 0) {
+						angle += 180;
+					}
+					allAngle.push(angle);
 				}
 			}
-			return allAspectRaito;
+			return allAngle;
 		}
 
 		function isAllStraght(item) {
