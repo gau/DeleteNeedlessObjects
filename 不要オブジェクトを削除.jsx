@@ -21,7 +21,7 @@ http://www.graphicartsunit.com/
 
 	// Constant
 	const SCRIPT_TITLE = "不要オブジェクトを削除";
-	const SCRIPT_VERSION = "0.7.0";
+	const SCRIPT_VERSION = "0.7.1";
 	const HAIRLINE_ACCURACY = 200;
 
 	// UI Dialog
@@ -83,7 +83,7 @@ http://www.graphicartsunit.com/
 			try {
 				deleteItems();
 			} catch(e) {
-				alert("以下エラーが発生しましたので処理を中止します\n" + e);
+				alert("以下のエラーが発生しましたので処理を中止します\n" + e);
 			}
 		}
 		thisObj.cancel.onClick = function() {
@@ -231,7 +231,6 @@ http://www.graphicartsunit.com/
 
 		// Case of symbol item
 		} else if (item.typename == 'SymbolItem') {
-			alert(item.typename);
 			foundSymbol = true;
 		}
 		return isTarget;
