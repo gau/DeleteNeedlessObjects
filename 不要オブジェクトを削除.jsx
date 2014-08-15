@@ -21,8 +21,8 @@ http://www.graphicartsunit.com/
 
 	// Constant
 	const SCRIPT_TITLE = "不要オブジェクトを削除";
-	const SCRIPT_VERSION = "0.7.1";
-	const HAIRLINE_ACCURACY = 200;
+	const SCRIPT_VERSION = "0.7.2";
+	const HAIRLINE_ACCURACY = 100;
 
 	// UI Dialog
 	function mainDialog() {
@@ -248,30 +248,35 @@ http://www.graphicartsunit.com/
 		var b = true;
 		if (!item.filled || item.stroked || !isAllStraght(item) || item.pathPoints.length < 2) b = false;
 		if (b) {
-			var pointNum = item.pathPoints.length;
-			var basePoint = {x:item.pathPoints[0].anchor[0], y:item.pathPoints[0].anchor[1]};
-			var lastPoint = {x:item.pathPoints[pointNum-1].anchor[0], y:item.pathPoints[pointNum-1].anchor[1]};
-			var baseRaito;
-			if ((basePoint.x-lastPoint.x) == 0 || (basePoint.y-lastPoint.y) == 0) {
-				baseRaito = 0;
+			var allAspectRaito = getAllAspectRaito(item.pathPoints);
+			var baseRaito = Math.max.apply(null, allAspectRaito);
+			if(baseRaito != 0){
+				b = false;
 			} else {
-				baseRaito = Math.round((basePoint.x-lastPoint.x)/(basePoint.y-lastPoint.y)*HAIRLINE_ACCURACY)/HAIRLINE_ACCURACY;
-			}
-			for (var i = 1; i < item.pathPoints.length; i++){
-				var pt = {x:item.pathPoints[i].anchor[0], y:item.pathPoints[i].anchor[1]};
-				var rt;
-				if ((basePoint.x-pt.x) == 0 || (basePoint.y-pt.y) == 0) {
-					rt = 0;
-				} else {
-					rt = Math.round((basePoint.x-pt.x) / (basePoint.y-pt.y)*HAIRLINE_ACCURACY)/HAIRLINE_ACCURACY;
-				}
-				if (baseRaito != rt){
-					b = false;
-					break;
+				for(var i=0; i<allAspectRaito.length; i++){
+					if (allAspectRaito[i] != 0 && baseRaito != allAspectRaito[i]) {
+						b = false;
+					}
 				}
 			}
 		}
 		return b;
+
+		function getAllAspectRaito(points) {
+			var allAspectRaito = [];
+			for (var i = 0; i < points.length-1; i++){
+				var basePoint = {x:points[i].anchor[0], y:points[i].anchor[1]};
+				var nextPoint = {x:points[i+1].anchor[0], y:points[i+1].anchor[1]};
+				if ((basePoint.x-nextPoint.x) == 0 || (basePoint.y-nextPoint.y) == 0) {
+					allAspectRaito[i] = 0;
+				} else if (basePoint.x == nextPoint.x && basePoint.y == nextPoint.y){
+					allAspectRaito[i] = 0;
+				} else {
+					allAspectRaito[i] = Math.round((basePoint.x-nextPoint.x)/(basePoint.y-nextPoint.y)*HAIRLINE_ACCURACY)/HAIRLINE_ACCURACY;
+				}
+			}
+			return allAspectRaito;
+		}
 
 		function isAllStraght(item) {
 			for(var i=0; i<item.pathPoints.length; i++){
