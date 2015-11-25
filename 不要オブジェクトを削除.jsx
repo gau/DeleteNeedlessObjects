@@ -1,7 +1,7 @@
 #target Illustrator	
 /*
 不要オブジェクトを削除.jsx
-Copyright (c) 2014 Toshiyuki Takahashi
+Copyright (c) 2014 - 2015 Toshiyuki Takahashi
 Released under the MIT license
 http://opensource.org/licenses/mit-license.php
 http://www.graphicartsunit.com/
@@ -15,13 +15,14 @@ http://www.graphicartsunit.com/
 		flagPathText : false,
 		flagHairline : false,
 		notDelete : false,
+		flagTransparent : false,
 		delLockObject : false,
 		showAlert : true
 	};
 
 	// Constant
 	const SCRIPT_TITLE = "不要オブジェクトを削除";
-	const SCRIPT_VERSION = "0.7.3";
+	const SCRIPT_VERSION = "0.7.4";
 	const HAIRLINE_ACCURACY = 800;
 
 	// UI Dialog
@@ -48,6 +49,7 @@ http://www.graphicartsunit.com/
 		thisObj.checkBox.flagPointText = thisObj.settingPanel.add("checkbox", undefined, "文字のないポイント文字");
 		thisObj.checkBox.flagAreaText = thisObj.settingPanel.add("checkbox", undefined, "文字のないエリア内文字");
 		thisObj.checkBox.flagPathText = thisObj.settingPanel.add("checkbox", undefined, "文字のないパス上文字");
+		thisObj.checkBox.flagTransparent = thisObj.settingPanel.add("checkbox", undefined, "不透明度0％のオブジェクト");
 		thisObj.checkBox.flagHairline = thisObj.settingPanel.add("checkbox", undefined, "ヘアラインパス");
 
 		thisObj.optionGroup = thisObj.dlg.add("group", undefined);
@@ -101,7 +103,7 @@ http://www.graphicartsunit.com/
 	dialog.showDialog();
 
 	// Main Process
-	function deleteItems(){
+	function deleteItems() {
 
 		// Get layers and items
 		var layers = app.activeDocument.layers;
@@ -145,20 +147,22 @@ http://www.graphicartsunit.com/
 					} finally {
 						deleteCollection.push(items[i]);
 					}
-				} else if (!isLockAndHide(items[i])){
+				} else if (!isLockAndHide(items[i])) {
 					deleteCollection.push(items[i]);
 				}
 			}
 		}
 
 		// Counter of delete imtes
-		var delCount = {'pathItem':0, 'pointText':0, 'areaText':0, 'pathText':0, 'hairLinePath':0};
+		var delCount = {'pathItem':0, 'pointText':0, 'areaText':0, 'pathText':0, 'transparentObjects':0, 'hairLinePath':0};
 
 		// Delete items
 		for (var i = 0; i < deleteCollection.length; i++) {
 			try {
-				if (deleteCollection[i].typename == 'TextFrame'){
-					switch(deleteCollection[i].kind){
+				if (deleteCollection[i].opacity <= 0) {
+					delCount.transparentObjects++;
+				} else if (deleteCollection[i].typename == 'TextFrame') {
+					switch(deleteCollection[i].kind) {
 						case TextType.POINTTEXT:
 							delCount.pointText++;
 							break;
@@ -172,7 +176,7 @@ http://www.graphicartsunit.com/
 							break;
 					}
 				} else if (deleteCollection[i].typename == 'PathItem') {
-					if (isHairlinePath(deleteCollection[i])){
+					if (isHairlinePath(deleteCollection[i])) {
 						delCount.hairLinePath++;
 					} else {
 						delCount.pathItem++;
@@ -187,6 +191,7 @@ http://www.graphicartsunit.com/
 				throw "アイテムの削除ができません[ " + e + " ]";
 				return;
 			}
+			app.redraw();
 		}
 
 		// Restore layer propaties
@@ -207,8 +212,11 @@ http://www.graphicartsunit.com/
 
 		var isTarget = false;
 
+		if (item.opacity <= 0 && settings.flagTransparent) {
+			isTarget = true;
+
 		// Case of text item
-		if (item.typename == 'TextFrame'){
+		} else if (item.typename == 'TextFrame') {
 			if (item.contents.length < 1) {
 
 				// Point text
@@ -223,6 +231,7 @@ http://www.graphicartsunit.com/
 
 		// Case of path item
 		} else if (item.typename == 'PathItem') {
+			// alert(item.opacity);
 			if (item.pathPoints.length < 2 && item.length <= 0 && settings.flagPathItem) {
 				isTarget = true;
 			} else if (item.pathPoints.length > 1 && settings.flagHairline && isHairlinePath(item)) {
@@ -249,10 +258,10 @@ http://www.graphicartsunit.com/
 		if (!item.filled || item.stroked || !isAllStraght(item) || item.pathPoints.length < 2) b = false;
 		if (b) {
 			var allAngle = getAllAngle(item.pathPoints);
-			if(allAngle.length > 1) {
+			if (allAngle.length > 1) {
 				var baseAngle = allAngle[0];
 				var allowableAngle = 360 / HAIRLINE_ACCURACY;
-				for(var i=0; i<allAngle.length; i++){
+				for (var i = 1; i < allAngle.length; i++) {
 					if (Math.abs(baseAngle - allAngle[i]) >= allowableAngle) {
 						b = false;
 					}
@@ -264,12 +273,12 @@ http://www.graphicartsunit.com/
 		function getAllAngle(points) {
 			var allAngle = [];
 			var basePoint, nextPoint, angle;
-			for (var i = 0; i < points.length-1; i++){
+			for (var i = 0; i < points.length - 1; i++) {
 				basePoint = {x:item.pathPoints[i].anchor[0], y:item.pathPoints[i].anchor[1]};
-				nextPoint = {x:item.pathPoints[i+1].anchor[0], y:item.pathPoints[i+1].anchor[1]};
+				nextPoint = {x:item.pathPoints[i + 1].anchor[0], y:item.pathPoints[i + 1].anchor[1]};
 				if (!(basePoint.x == nextPoint.x && basePoint.y == nextPoint.y)) {
 					angle = (Math.atan2(nextPoint.y - basePoint.y, nextPoint.x - basePoint.x)) * 180 / Math.PI;
-					if(angle < 0) {
+					if (angle < 0) {
 						angle += 180;
 					}
 					allAngle.push(angle);
@@ -279,8 +288,8 @@ http://www.graphicartsunit.com/
 		}
 
 		function isAllStraght(item) {
-			for(var i=0; i<item.pathPoints.length; i++){
-				if (hasDirection(item.pathPoints[i])){
+			for (var i = 0; i < item.pathPoints.length; i++) {
+				if (hasDirection(item.pathPoints[i])) {
 					return false;
 					break;
 				}
@@ -305,7 +314,7 @@ http://www.graphicartsunit.com/
 	function showMessage(delCount) {
 		var messageStr = '対象のオブジェクトが見つかりませんでした';
 		var actionStr = '削除';
-		var totalCount = delCount.pathItem + delCount.pointText + delCount.areaText + delCount.pathText + delCount.hairLinePath;
+		var totalCount = delCount.pathItem + delCount.pointText + delCount.areaText + delCount.pathText + delCount.transparentObjects + delCount.hairLinePath;
 		if (settings.notDelete) actionStr = '選択';
 		if (totalCount <= 0) {
 			messageStr = actionStr + messageStr;
@@ -315,6 +324,7 @@ http://www.graphicartsunit.com/
 			if (delCount.pointText > 0) messageStr = messageStr + '・文字のないポイント文字 ' + delCount.pointText + ' 点\n';
 			if (delCount.areaText > 0) messageStr = messageStr + '・文字のないエリア内文字 ' + delCount.areaText + ' 点\n';
 			if (delCount.pathText > 0) messageStr = messageStr + '・文字のないパス上文字 ' + delCount.pathText + ' 点\n';
+			if (delCount.transparentObjects > 0) messageStr = messageStr + '・不透明度0％のオブジェクト ' + delCount.transparentObjects + ' 点\n';
 			if (delCount.hairLinePath > 0) messageStr = messageStr + '・ヘアラインパス ' + delCount.hairLinePath + ' 点';
 		}
 		alert(messageStr);
